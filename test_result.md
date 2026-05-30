@@ -101,3 +101,118 @@
 #====================================================================================================
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
+
+user_problem_statement: |
+  GAIA — Earth-Calendar Astrology. v1.7 session: user uploaded a competitor APK ("Astrology of Gaia")
+  for assessment, then asked to (1) build v1.7 GAIA Relationship Weave as a PAID Stripe feature,
+  (2) add Saved Charts persistence, (3) add Multi-Person 3-6 reading, (4) absorb the competitor's
+  best advanced features. Currency: CAD (user in Canada). Pricing: $6.99 CAD pair / $10.99 CAD group.
+
+frontend:
+  - task: "Phase 1 — Saved Charts (Zustand + AsyncStorage)"
+    implemented: true
+    working: true
+    file: "/app/frontend/src/store/charts.js, /app/frontend/app/saved-charts.tsx, /app/frontend/app/result.tsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "main"
+        comment: "Built Zustand store with AsyncStorage persistence (max 50 charts). Result.tsx adds Save button + modal capturing label + free-text notes. Duplicate detection by (birth_date, birth_hour) flips CTA to 'Saved'. New /saved-charts screen lists entries with chip elements + tap-to-open + delete-with-confirm (inline on web, native Alert on iOS/Android)."
+      - working: true
+        agent: "testing"
+        comment: "All 7 review scenarios passed: top-bar cog, Settings page (lang + hemi segments, count + Clear-all disabled state, version), saved-charts empty state, full Save flow (modal → label/notes → confirm → 'Saved' pill → list shows Marie + Sister + chips → re-open), persistence across hard reload, bilingual EN/FR, delete flow with inline confirm on web. No functional issues. Report: /app/test_reports/iteration_7.json."
+
+  - task: "Phase 1 — Settings page + persisted preferences"
+    implemented: true
+    working: true
+    file: "/app/frontend/src/store/prefs.js, /app/frontend/src/context/Lang.js, /app/frontend/app/settings.tsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "main"
+        comment: "Created /settings with language segment (English/Français), default hemisphere (North/South), Your data panel with chart count + Clear-all (inline confirm on web), About link, version 1.7.0. Lang context now reads from persisted prefs store so language survives reloads. Chart.tsx uses persisted default hemisphere."
+      - working: true
+        agent: "testing"
+        comment: "Bilingual switching persists across reload via Zustand persist. Hemisphere selection persists. Version label visible. Clear-all correctly disabled when 0 charts, enabled after save. Minor a11y note: TouchableOpacity disabled prop doesn't propagate to web HTML disabled attribute — non-blocking."
+
+  - task: "Phase 1 — Babel config for zustand mjs"
+    implemented: true
+    working: true
+    file: "/app/frontend/babel.config.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "main"
+        comment: "Added babel.config.js with babel-preset-expo + babel-plugin-transform-import-meta to neutralize import.meta.env references in zustand's ESM .mjs bundles when Metro resolves them on web. Locked to zustand@4.3.9 (CJS-friendly entry). Without this, web bundle threw 'Cannot use import.meta outside a module'."
+
+  - task: "Phase 2 — GAIA Relationship Weave (PAID, Stripe)"
+    implemented: false
+    working: "NA"
+    file: "pending"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Not started. Phase 2 of v1.7 roadmap. Needs integration_playbook_expert_v2 call for Stripe. Pricing locked: $6.99 CAD one-time per couple. Currency CAD, locale FR/EN."
+
+  - task: "Phase 3 — Multi-Person Weave 3-6 (PAID)"
+    implemented: false
+    working: "NA"
+    file: "pending"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: false
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Not started. Phase 3 of v1.7 roadmap. Pricing: $10.99 CAD per group. Reuses Phase 2 Stripe architecture."
+
+  - task: "Phase 4 — Competitor parity polish"
+    implemented: false
+    working: "NA"
+    file: "pending"
+    stuck_count: 0
+    priority: "low"
+    needs_retesting: false
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Not started. Climate selector (Coastal/Tropical/Highlands/etc) on Create Chart, react-native-calendars date picker, result.tsx modular refactor, 'Hidden Signal' free daily teaser. Phase 4 of v1.7 roadmap."
+
+backend:
+  - task: "Backend untouched in v1.7 Phase 1"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "low"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "main"
+        comment: "Backend not modified in Phase 1 — Saved Charts persistence is fully client-side. Existing endpoints (/api/reading, /api/daily, /api/daily/deep, /api/gaiascope, /api/share-card) untouched and verified still serving via logs."
+
+metadata:
+  created_by: "main_agent"
+  version: "1.7.0"
+  test_sequence: 7
+  run_ui: false
+
+test_plan:
+  current_focus:
+    - "Phase 2 — GAIA Relationship Weave (PAID, Stripe) implementation"
+  stuck_tasks: []
+  test_all: false
+  test_priority: "high_first"
+
+agent_communication:
+  - agent: "main"
+    message: "Phase 1 complete and verified. Saved Charts (Zustand + AsyncStorage), Settings screen (persisted language + hemisphere), top-bar cog navigation, bilingual EN/FR throughout. Frontend testing agent confirmed all 7 scenarios pass. Locked dependencies: zustand@4.3.9, @react-native-async-storage/async-storage@2.2.0, babel-plugin-transform-import-meta. Ready for user to validate Phase 1 and decide on Phase 2 (Stripe Weave) kick-off."
