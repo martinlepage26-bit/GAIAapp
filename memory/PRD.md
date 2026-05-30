@@ -41,7 +41,15 @@ GAIA is a bilingual (FR/EN) Expo mobile app that inverts classical astrology: in
 - **Gaiascope on `/result`** — new `POST /api/gaiascope` endpoint (Claude Sonnet 4.5) generates a horoscope-style 60–110 word advice paragraph ending in one concrete gesture, personalized to the reader's calendar sign and today's three rhythms. Auto-fetched on mount, regenerated on lang toggle, with a "New advice" refresh button.
 - **Share today's weave** — new "Share today's weave" button on the home daily card. When the user has generated the woven daily reading, it opens a Pillow testimonial PNG (1080×1350) built from today's sign + the AI weave text. Reuses the existing `/api/share-card` endpoint with no new backend work — the frontend constructs a synthetic chart payload from today's daily data.
 
-## Architecture
+## v1.7 — Saved Charts, Settings & multi-person roadmap (in progress)
+- **Saved Charts (Phase 1 — DONE)** — local-only library of user-saved Earth-charts via **Zustand + AsyncStorage** persistence (`src/store/charts.js`). Each entry stores the full computed chart, optional birth hour, a label, optional notes, language at save time, and timestamps. Up to 50 entries kept on device. New screen `/saved-charts` lists them with chip-element previews, tap-to-open, swipe-style delete with confirm; empty state with CTA to generate. `result.tsx` exposes a **Bookmark "Save this chart" button**; duplicate detection (same `birth_date` + same `birth_hour`) flips the CTA to "Saved" badge. Modal collects an optional name + free-text note (e.g. *"Marie — older sister"*).
+- **Settings (Phase 1 — DONE)** — new screen `/settings` with: language segment (English/Français), default hemisphere (North/South), "Your data" panel with chart count + Clear-all (with inline confirm on web, native `Alert` on iOS/Android), About link, and version label (1.7.0). All preferences persisted in `src/store/prefs.js`. Language preference now survives app reloads — `Lang.js` context reads from the persisted store.
+- **Babel + state stack** — added `babel-plugin-transform-import-meta` + an explicit `babel.config.js` (with `babel-preset-expo`) to neutralize `import.meta.env` references emitted by zustand's `.mjs` bundles on the Metro web bundler. Locked to **`zustand@4.3.9`** (CJS-friendly entry).
+- **Phase 2 — GAIA Relationship Weave (PAID, Stripe — pending)** — couple analysis with locked teaser preview, full elemental exchange / conflict & care / money & labor / repair advice / shared gesture sections, MongoDB caching by hashed (dateA, dateB, type), shareable PNG. Currency: **CAD**, one-time **$6.99 CAD** per couple unlock.
+- **Phase 3 — Multi-Person Weave 3-6 (PAID — pending)** — group dynamic analysis for families, teams, friend circles. One-time **$10.99 CAD** per group. Shares architecture with Pair Weave.
+- **Phase 4 — Competitor parity polish (pending)** — climate selector (Coastal/Tropical/Highlands/Continental/Arid) on Create Chart, `react-native-calendars` date picker, `result.tsx` modular refactor, "Hidden Signal" free daily teaser.
+
+
 - **Backend** (FastAPI + emergentintegrations + Pillow)
   - `server.py` — routes, Pydantic models, AI prompts (chart / daily / gaiascope)
   - `share_cards.py` — 3 Pillow renderers (data / testimonial / story)

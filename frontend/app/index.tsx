@@ -14,12 +14,13 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import Animated, { FadeInDown, FadeIn } from 'react-native-reanimated';
-import { Compass, Sparkles, BookOpen, LandPlot, CircleDot, Info, Sunrise, Moon, Clock, Sparkle, Share2, Download, X } from 'lucide-react-native';
+import { Compass, Sparkles, BookOpen, LandPlot, CircleDot, Info, Sunrise, Moon, Clock, Sparkle, Share2, Download, X, Settings as SettingsIcon, Bookmark } from 'lucide-react-native';
 
 import StarryBackground from '../src/components/StarryBackground.js';
 import LangToggle from '../src/components/LangToggle.js';
 import { Heading, BodyText, Label, Chip } from '../src/components/UI.js';
 import { useLang } from '../src/context/Lang.js';
+import { useChartsStore } from '../src/store/charts.js';
 import { COLORS, FONTS } from '../src/theme.js';
 import { SIGNS } from '../src/data/gaia.js';
 
@@ -47,6 +48,7 @@ function QuickLink({ icon: Icon, title, subtitle, onPress, testID }) {
 export default function Home() {
   const router = useRouter();
   const { t, lang } = useLang();
+  const savedChartsCount = useChartsStore((s) => s.charts.length);
   const [daily, setDaily] = useState(null);
   const [loadingDaily, setLoadingDaily] = useState(true);
   const [deepReading, setDeepReading] = useState(null);
@@ -200,7 +202,17 @@ export default function Home() {
               <Text style={styles.brand}>{t('app_name')}</Text>
               <Text style={styles.tagline}>{t('tagline')}</Text>
             </View>
-            <LangToggle />
+            <View style={styles.topActions}>
+              <LangToggle />
+              <TouchableOpacity
+                testID="nav-settings"
+                style={styles.iconBtn}
+                onPress={() => router.push('/settings')}
+                accessibilityLabel={t('settings')}
+              >
+                <SettingsIcon size={18} color={COLORS.gold} strokeWidth={1.4} />
+              </TouchableOpacity>
+            </View>
           </View>
 
           <Animated.View entering={FadeInDown.duration(700).delay(60)}>
@@ -352,6 +364,19 @@ export default function Home() {
 
           <Animated.View entering={FadeInDown.duration(700).delay(400)}>
             <Label>{t('explore')}</Label>
+            {savedChartsCount > 0 ? (
+              <QuickLink
+                testID="nav-saved-charts"
+                icon={Bookmark}
+                title={t('saved_charts')}
+                subtitle={
+                  lang === 'fr'
+                    ? `${savedChartsCount} charte${savedChartsCount === 1 ? '' : 's'} sauvegardée${savedChartsCount === 1 ? '' : 's'}`
+                    : `${savedChartsCount} chart${savedChartsCount === 1 ? '' : 's'} saved`
+                }
+                onPress={() => router.push('/saved-charts')}
+              />
+            ) : null}
             <QuickLink
               testID="nav-signs"
               icon={CircleDot}
@@ -458,6 +483,21 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'flex-start',
     marginBottom: 28,
+  },
+  topActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+  iconBtn: {
+    width: 38,
+    height: 38,
+    borderRadius: 999,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: COLORS.borderStrong,
+    backgroundColor: 'rgba(21,25,33,0.6)',
   },
   brand: {
     color: COLORS.gold,

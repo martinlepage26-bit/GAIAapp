@@ -20,12 +20,14 @@ import StarryBackground from '../src/components/StarryBackground.js';
 import LangToggle from '../src/components/LangToggle.js';
 import { Heading, BodyText, Label, Pill } from '../src/components/UI.js';
 import { useLang } from '../src/context/Lang.js';
+import { usePrefsStore } from '../src/store/prefs.js';
 import { COLORS, FONTS } from '../src/theme.js';
 import { buildChart } from '../src/lib/chart.js';
 
 export default function ChartGenerator() {
   const router = useRouter();
   const { t, lang } = useLang();
+  const defaultHemisphere = usePrefsStore((s) => s.hemisphere);
 
   const today = new Date();
   const [year, setYear] = useState(String(today.getFullYear() - 25));
@@ -33,7 +35,7 @@ export default function ChartGenerator() {
   const [day, setDay] = useState('21');
   const [birthHour, setBirthHour] = useState('');
   const [place, setPlace] = useState('');
-  const [hemisphere, setHemisphere] = useState('N');
+  const [hemisphere, setHemisphere] = useState(defaultHemisphere || 'N');
   const [cutoffMonth, setCutoffMonth] = useState('');
   const [cutoffDay, setCutoffDay] = useState('');
   const [loading, setLoading] = useState(false);

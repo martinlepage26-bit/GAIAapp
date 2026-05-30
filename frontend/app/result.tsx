@@ -10,11 +10,13 @@ import {
   Image,
   Platform,
   Share,
+  TextInput,
+  KeyboardAvoidingView,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import Animated, { FadeInDown, FadeIn } from 'react-native-reanimated';
-import { ChevronLeft, Sparkles, RotateCcw, Share2, Download, X, Quote, Smartphone } from 'lucide-react-native';
+import { ChevronLeft, Sparkles, RotateCcw, Share2, Download, X, Quote, Smartphone, Bookmark, Check } from 'lucide-react-native';
 
 import StarryBackground from '../src/components/StarryBackground.js';
 import LangToggle from '../src/components/LangToggle.js';
@@ -22,6 +24,7 @@ import ElementWheel from '../src/components/ElementWheel.js';
 import TrioDiagram from '../src/components/TrioDiagram.js';
 import { Heading, BodyText, Label, Chip, SectionCard } from '../src/components/UI.js';
 import { useLang } from '../src/context/Lang.js';
+import { useChartsStore } from '../src/store/charts.js';
 import { COLORS, FONTS } from '../src/theme.js';
 import { chartToPayload } from '../src/lib/chart.js';
 
@@ -61,6 +64,43 @@ export default function Result() {
   const [scope, setScope] = useState(null);
   const [scopeLoading, setScopeLoading] = useState(false);
   const [scopeError, setScopeError] = useState(null);
+
+  // — Saved-chart state —
+  const saveChart = useChartsStore((s) => s.saveChart);
+  const findDuplicate = useChartsStore((s) => s.findDuplicate);
+  const updateChart = useChartsStore((s) => s.updateChart);
+  const [saveModalOpen, setSaveModalOpen] = useState(false);
+  const [saveLabel, setSaveLabel] = useState('');
+  const [saveNotes, setSaveNotes] = useState('');
+  const [savedId, setSavedId] = useState(null);
+
+  // On chart change, detect if this exact chart+birthHour was already saved (so we
+  // can show a "Saved" pill instead of the Save CTA).
+  useEffect(() => {
+    if (!chart) return;
+    const dup = findDuplicate({ chart, birthHour });
+    setSavedId(dup ? dup.id : null);
+  }, [chart, birthHour, findDuplicate]);
+
+  const openSaveModal = useCallback(() => {
+    if (savedId) return; // already saved
+    setSaveLabel('');
+    setSaveNotes('');
+    setSaveModalOpen(true);
+  }, [savedId]);
+
+  const handleSaveChart = useCallback(() => {
+    if (!chart) return;
+    const id = saveChart({
+      chart,
+      birthHour,
+      label: saveLabel,
+      notes: saveNotes,
+      lang,
+    });
+    setSavedId(id);
+    setSaveModalOpen(false);
+  }, [chart, birthHour, saveChart, saveLabel, saveNotes, lang]);
 
   // Invalidate cached PNGs whenever the user switches language — previously-cached
   // cards were rendered with labels in the old language and must be regenerated.
@@ -419,6 +459,29 @@ export default function Result() {
               <Text style={styles.error}>{t('error')} — {error}</Text>
             ) : null}
 
+            {/* Save chart CTA — appears once a reading has been generated OR immediately for unsaved charts */}
+            <TouchableOpacity
+              testID={savedId ? 'chart-already-saved' : 'open-save-chart'}
+              style={[styles.saveBtn, savedId && styles.saveBtnDone]}
+              onPress={openSaveModal}
+              activeOpacity={savedId ? 1 : 0.85}
+              disabled={!!savedId}
+            >
+              {savedId ? (
+                <>
+                  <Check size={15} color={COLORS.moss} strokeWidth={2} />
+                  <Text style={[styles.saveBtnText, { color: COLORS.moss }]}>
+                    {t('save_chart_saved')}
+                  </Text>
+                </>
+              ) : (
+                <>
+                  <Bookmark size={15} color={COLORS.gold} strokeWidth={1.6} />
+                  <Text style={styles.saveBtnText}>{t('save_chart')}</Text>
+                </>
+              )}
+            </TouchableOpacity>
+
             {/* Share card CTAs */}
             <TouchableOpacity
               testID="open-share-card"
@@ -565,6 +628,79 @@ export default function Result() {
             </ScrollView>
           </View>
         </Modal>
+
+        {/* Save chart modal */}
+        <Modal
+          visible={saveModalOpen}
+          transparent
+          animationType="fade"
+          onRequestClose={() => setSaveModalOpen(false)}
+        >
+          <KeyboardAvoidingView
+            style={styles.saveModalRoot}
+            behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+            testID="save-chart-modal"
+          >
+            <View style={styles.saveModalCard}>
+              <View style={styles.saveModalHeader}>
+                <Bookmark size={20} color={COLORS.gold} strokeWidth={1.4} />
+                <Text style={styles.saveModalTitle}>{t('save_chart_prompt_title')}</Text>
+                <TouchableOpacity
+                  testID="close-save-modal"
+                  style={styles.saveModalClose}
+                  onPress={() => setSaveModalOpen(false)}
+                  accessibilityLabel={t('cancel')}
+                >
+                  <X size={18} color={COLORS.textMuted} strokeWidth={1.6} />
+                </TouchableOpacity>
+              </View>
+              <Text style={styles.saveModalBody}>{t('save_chart_prompt_body')}</Text>
+              <TextInput
+                testID="save-label-input"
+                style={styles.saveInput}
+                value={saveLabel}
+                onChangeText={setSaveLabel}
+                placeholder={t('save_chart_label_placeholder')}
+                placeholderTextColor={COLORS.textDim}
+                maxLength={40}
+                autoCapitalize="words"
+                autoCorrect={false}
+                returnKeyType="next"
+              />
+              <TextInput
+                testID="save-notes-input"
+                style={[styles.saveInput, styles.saveInputMulti]}
+                value={saveNotes}
+                onChangeText={setSaveNotes}
+                placeholder={t('save_chart_notes_placeholder')}
+                placeholderTextColor={COLORS.textDim}
+                maxLength={140}
+                multiline
+                numberOfLines={2}
+                returnKeyType="done"
+              />
+              <View style={styles.saveModalActions}>
+                <TouchableOpacity
+                  testID="save-modal-cancel"
+                  style={styles.saveModalCancel}
+                  onPress={() => setSaveModalOpen(false)}
+                  activeOpacity={0.7}
+                >
+                  <Text style={styles.saveModalCancelText}>{t('cancel')}</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  testID="save-modal-confirm"
+                  style={styles.saveModalConfirm}
+                  onPress={handleSaveChart}
+                  activeOpacity={0.85}
+                >
+                  <Check size={14} color={COLORS.bg} strokeWidth={2.2} />
+                  <Text style={styles.saveModalConfirmText}>{t('save')}</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </KeyboardAvoidingView>
+        </Modal>
       </SafeAreaView>
     </StarryBackground>
   );
@@ -682,6 +818,122 @@ const styles = StyleSheet.create({
   },
   shareBtnText: {
     color: COLORS.terracotta,
+    fontFamily: FONTS.bodySemi,
+    fontSize: 12,
+    letterSpacing: 2,
+    textTransform: 'uppercase',
+  },
+  saveBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 10,
+    paddingVertical: 14,
+    borderRadius: 14,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: COLORS.borderStrong,
+    backgroundColor: 'rgba(212,175,55,0.06)',
+    marginBottom: 14,
+  },
+  saveBtnDone: {
+    borderColor: 'rgba(122,160,90,0.5)',
+    backgroundColor: 'rgba(122,160,90,0.08)',
+  },
+  saveBtnText: {
+    color: COLORS.gold,
+    fontFamily: FONTS.bodySemi,
+    fontSize: 12,
+    letterSpacing: 2,
+    textTransform: 'uppercase',
+  },
+  saveModalRoot: {
+    flex: 1,
+    backgroundColor: 'rgba(7,9,12,0.92)',
+    justifyContent: 'center',
+    padding: 24,
+  },
+  saveModalCard: {
+    backgroundColor: COLORS.surface,
+    borderRadius: 18,
+    padding: 22,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: COLORS.borderStrong,
+  },
+  saveModalHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    marginBottom: 12,
+  },
+  saveModalTitle: {
+    flex: 1,
+    color: COLORS.text,
+    fontFamily: FONTS.serifBold,
+    fontSize: 18,
+  },
+  saveModalClose: {
+    width: 32,
+    height: 32,
+    borderRadius: 999,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  saveModalBody: {
+    color: COLORS.textMuted,
+    fontFamily: FONTS.body,
+    fontSize: 13,
+    lineHeight: 20,
+    fontStyle: 'italic',
+    marginBottom: 18,
+  },
+  saveInput: {
+    backgroundColor: 'rgba(7,9,12,0.5)',
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: COLORS.borderStrong,
+    borderRadius: 12,
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+    color: COLORS.text,
+    fontFamily: FONTS.body,
+    fontSize: 14,
+    marginBottom: 12,
+  },
+  saveInputMulti: {
+    minHeight: 64,
+    textAlignVertical: 'top',
+  },
+  saveModalActions: {
+    flexDirection: 'row',
+    gap: 10,
+    marginTop: 8,
+  },
+  saveModalCancel: {
+    flex: 1,
+    paddingVertical: 13,
+    borderRadius: 12,
+    alignItems: 'center',
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: COLORS.borderStrong,
+  },
+  saveModalCancelText: {
+    color: COLORS.textMuted,
+    fontFamily: FONTS.bodyMedium,
+    fontSize: 12,
+    letterSpacing: 2,
+    textTransform: 'uppercase',
+  },
+  saveModalConfirm: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    paddingVertical: 13,
+    borderRadius: 12,
+    backgroundColor: COLORS.gold,
+  },
+  saveModalConfirmText: {
+    color: COLORS.bg,
     fontFamily: FONTS.bodySemi,
     fontSize: 12,
     letterSpacing: 2,
