@@ -49,7 +49,7 @@ jobs:
           if [ -n "$EAS_PROJECT_ID" ]; then
             npx eas-cli@latest init --id "$EAS_PROJECT_ID" --force --non-interactive
           else
-            npx eas-cli@latest init --non-interactive
+            npx eas-cli@latest init --force --non-interactive
           fi
 
       - name: Build iOS IPA
