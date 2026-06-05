@@ -26,6 +26,7 @@ jobs:
         working-directory: frontend
     env:
       EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+      EAS_PROJECT_ID: ${{ secrets.EAS_PROJECT_ID }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -42,6 +43,14 @@ jobs:
 
       - name: Install dependencies
         run: yarn install --frozen-lockfile --non-interactive
+
+      - name: Configure EAS project
+        run: |
+          if [ -n "$EAS_PROJECT_ID" ]; then
+            npx eas-cli@latest init --id "$EAS_PROJECT_ID" --force --non-interactive
+          else
+            npx eas-cli@latest init --non-interactive
+          fi
 
       - name: Build iOS IPA
         run: |
