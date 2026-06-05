@@ -46,8 +46,8 @@ export default function SignsList() {
           <View style={{ height: 8 }} />
           <BodyText dim>
             {lang === 'fr'
-              ? 'Douze archétypes mensuels de l\'astrologie du calendrier terrestre.'
-              : 'Twelve monthly archetypes of Earth-calendar astrology.'}
+              ? 'Douze archétypes mensuels de la grammaire du calendrier terrestre.'
+              : 'Twelve monthly archetypes of Earth-calendar grammar.'}
           </BodyText>
 
           <View style={{ height: 24 }} />

@@ -60,7 +60,7 @@ export default function Result() {
   // Birth trio (Sign × Rising × Moon) — fetched only when birthHour is provided.
   const [trio, setTrio] = useState(null);
 
-  // Today's Gaiascope — fetched once on mount, regenerated on lang change.
+  // Today's daily pressure note — fetched once on mount, regenerated on lang change.
   const [scope, setScope] = useState(null);
   const [scopeLoading, setScopeLoading] = useState(false);
   const [scopeError, setScopeError] = useState(null);
@@ -318,7 +318,7 @@ export default function Result() {
             </Animated.View>
           ) : null}
 
-          {/* Daily Gaiascope — personalized horoscope-style advice for today */}
+          {/* Daily Pressure — grounded calendar reflection for today */}
           <Animated.View entering={FadeInDown.duration(700).delay(350)} testID="gaiascope-section">
             <SectionCard
               title={
@@ -363,7 +363,7 @@ export default function Result() {
                   >
                     <RotateCcw size={12} color={COLORS.textMuted} strokeWidth={1.4} />
                     <Text style={styles.scopeRefreshText}>
-                      {lang === 'fr' ? 'Nouveau conseil' : 'New advice'}
+                      {lang === 'fr' ? 'Nouvelle pression' : 'New pressure note'}
                     </Text>
                   </TouchableOpacity>
                 </>

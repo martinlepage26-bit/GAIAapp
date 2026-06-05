@@ -160,7 +160,7 @@ def _draw_footer(draw: ImageDraw.ImageDraw, h: int, lang: str) -> None:
         else "The calendar writes the person."
     )
     draw.text((70, h - 110), foot, font=f_foot, fill=GOLD)
-    draw.text((70, h - 70), "gaia · earth-calendar astrology", font=f_tag, fill=MUTED)
+    draw.text((70, h - 70), "gaia · earth-calendar grammar", font=f_tag, fill=MUTED)
 
 
 def _draw_element_pills(
@@ -457,6 +457,6 @@ def render_story_sticker(chart: Any, lang: str) -> bytes:
         else "The calendar writes the person."
     )
     _center_text(draw, foot, h - 200, f_foot, GOLD, w)
-    _center_text(draw, "gaia \u00b7 earth-calendar astrology", h - 150, f_tag, MUTED, w)
+    _center_text(draw, "gaia \u00b7 earth-calendar grammar", h - 150, f_tag, MUTED, w)
 
     return _to_png_bytes(img)

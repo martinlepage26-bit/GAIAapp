@@ -1,7 +1,7 @@
 /**
- * GAIA — Earth-Calendar Astrology static content (bilingual FR/EN).
+ * GAIA — Earth-Calendar Grammar static content (bilingual FR/EN).
  * All text sourced from the user-provided content describing
- * Earth-facing, calendar-driven, inward astrology.
+ * Earth-facing, calendar-driven symbolic grammar.
  */
 
 export const SIGNS = [
@@ -478,10 +478,10 @@ export const HOUSES = [
 export const UI_STRINGS = {
   en: {
     app_name: 'GAIA',
-    tagline: 'Earth-Calendar Astrology',
-    intro_title: 'The calendar writes the person.',
+    tagline: 'Earth-Calendar Grammar',
+    intro_title: 'The calendar shapes the conditions.',
     intro_body:
-      "Classical astrology looks upward and says the cosmos writes you. GAIA looks inward and says the calendar edits you. The Sun still rules — not as a distant symbol, but as light, heat, school cutoffs, harvest, holidays, exams, fiscal quarters, and the rhythms of belonging.",
+      "GAIA reads the calendar as lived atmosphere: light, heat, school cutoffs, harvest, holidays, exams, fiscal quarters, local weather, and the rhythms of belonging.",
     cta_generate: 'Generate my Earth-chart',
     cta_explore: 'Explore the system',
     daily_title: "Today's Earth weather",
@@ -528,9 +528,9 @@ export const UI_STRINGS = {
     about_body_1:
       "In this system, birth time does not magically imprint personality. Instead, it shapes repeated experiences: school cutoffs, harvest or scarcity, winter darkness or summer exposure, exam seasons, tax seasons, religious calendars, weather, latitude, urban rhythms.",
     about_body_2:
-      "A person is not born 'under Mars'. They are born under institutional rebirth, holiday attention, relative-age effects, festival proximity. That can become personality-like.",
+      "A person enters a world already moving through institutions, holidays, relative-age effects, festival proximity, weather, and family rhythms. GAIA maps those conditions as symbolic calendar pressure.",
     about_body_3:
-      "This is not destiny. It is structured probability. The calendar repeatedly edits who you are allowed to become.",
+      "This is not destiny or a forecast. It is a reflective grammar for noticing how repeated seasonal and civic pressures shape a life.",
     disclaimer:
       'Not medical, legal, or financial advice. This is a symbolic, probabilistic system grounded in seasonal and civic rhythms.',
     // — Saved charts —
@@ -568,10 +568,10 @@ export const UI_STRINGS = {
   },
   fr: {
     app_name: 'GAIA',
-    tagline: 'Astrologie du Calendrier Terrestre',
-    intro_title: 'Le calendrier écrit la personne.',
+    tagline: 'Grammaire du Calendrier Terrestre',
+    intro_title: 'Le calendrier façonne les conditions.',
     intro_body:
-      "L'astrologie classique regarde vers le haut : le cosmos t'écrit. GAIA regarde vers l'intérieur : le calendrier te compose. Le Soleil règne encore — non comme un symbole lointain, mais comme lumière, chaleur, dates butoirs scolaires, récolte, fêtes, examens, trimestres fiscaux, rythmes d'appartenance.",
+      "GAIA lit le calendrier comme une atmosphère vécue : lumière, chaleur, dates butoirs scolaires, récolte, fêtes, examens, trimestres fiscaux, météo locale et rythmes d'appartenance.",
     cta_generate: 'Générer ma charte terrestre',
     cta_explore: 'Explorer le système',
     daily_title: 'Météo terrestre du jour',
@@ -618,9 +618,9 @@ export const UI_STRINGS = {
     about_body_1:
       "Dans ce système, l'heure de naissance n'imprime pas magiquement la personnalité. Elle façonne plutôt des expériences répétées : dates butoirs scolaires, récolte ou disette, obscurité hivernale ou exposition estivale, périodes d'examens, saisons fiscales, calendriers religieux, météo, latitude, rythmes urbains.",
     about_body_2:
-      "On ne naît pas « sous Mars ». On naît sous la renaissance institutionnelle, l'attention des fêtes, les effets d'âge relatif, la proximité des festivals. Cela peut devenir une personnalité.",
+      "Une personne entre dans un monde déjà traversé par les institutions, les fêtes, les effets d'âge relatif, la proximité des festivals, la météo et les rythmes familiaux. GAIA cartographie ces conditions comme pression symbolique du calendrier.",
     about_body_3:
-      "Ce n'est pas un destin. C'est une probabilité structurée. Le calendrier édite à répétition ce que tu as le droit de devenir.",
+      "Ce n'est ni un destin ni une prévision. C'est une grammaire réflexive pour remarquer comment les pressions saisonnières et civiques répétées façonnent une vie.",
     disclaimer:
       'Pas un avis médical, juridique ou financier. Système symbolique et probabiliste ancré dans les rythmes saisonniers et civiques.',
     // — Cartes sauvegardées —

@@ -6,7 +6,7 @@ Three overlaid rhythms shape each moment:
   2. Daily rising   (hour of day) — how the person crosses the threshold now
   3. Lunar phase    (moon)        — collective tide + inner rhythm
 
-All computations are inward-astrology rephrasings: the time of day is not
+All computations are Earth-calendar rephrasings: the time of day is not
 a "rising sign" cast from stars, it is the daily edge at which the body
 emerges into public time. The moon is not a celestial personality, it is
 the shared tidal pressure of the night sky on sleep, feeling, and ritual.
