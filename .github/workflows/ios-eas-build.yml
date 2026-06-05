@@ -1,0 +1,52 @@
+name: Build iOS IPA
+
+on:
+  workflow_dispatch:
+    inputs:
+      profile:
+        description: "EAS build profile"
+        required: true
+        default: "testflight"
+        type: choice
+        options:
+          - testflight
+          - production
+      auto_submit:
+        description: "Submit to App Store Connect after build"
+        required: true
+        default: false
+        type: boolean
+
+jobs:
+  ios:
+    name: EAS iOS build
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    env:
+      EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: yarn
+          cache-dependency-path: frontend/yarn.lock
+
+      - name: Enable Corepack
+        run: corepack enable
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile --non-interactive
+
+      - name: Build iOS IPA
+        run: |
+          if [ "${{ inputs.auto_submit }}" = "true" ]; then
+            npx eas-cli@latest build --platform ios --profile "${{ inputs.profile }}" --auto-submit --non-interactive
+          else
+            npx eas-cli@latest build --platform ios --profile "${{ inputs.profile }}" --non-interactive
+          fi
